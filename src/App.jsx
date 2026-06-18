@@ -19,16 +19,19 @@ import AdminDashboard from "@components/dashboard/AdminDashboard";
 import VendorDashboard from "@components/dashboard/VendorDashboard";
 import "@styles/global.css";
 
-const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID || "sb"; // Use "sb" for sandbox testing
+const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID || "sb";
 
 function App() {
+  // Get base URL for GitHub Pages
+  const basename = import.meta.env.BASE_URL || "/";
+
   return (
     <PayPalScriptProvider options={{ 
       clientId: PAYPAL_CLIENT_ID,
       currency: "ZAR",
       intent: "capture",
     }}>
-      <BrowserRouter>
+      <BrowserRouter basename={basename}>
         <AuthProvider>
           <CartProvider>
             <Routes>
