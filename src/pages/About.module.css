@@ -1,0 +1,22 @@
+.about {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.about h1 {
+  color: #1a237e;
+  margin-bottom: 1.5rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

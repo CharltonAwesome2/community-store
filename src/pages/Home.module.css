@@ -1,0 +1,162 @@
+.home {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.hero {
+  background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+  border-radius: 12px;
+  padding: 3rem 4rem;
+  color: white;
+  margin-bottom: 3rem;
+}
+
+.heroContent {
+  max-width: 600px;
+}
+
+.heroContent h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.heroContent p {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  margin-bottom: 1.5rem;
+}
+
+.heroBtn {
+  display: inline-block;
+  background: white;
+  color: #1a237e;
+  padding: 0.75rem 2rem;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: transform 0.2s;
+}
+
+.heroBtn:hover {
+  transform: scale(1.05);
+}
+
+.categories h2,
+.featured h2 {
+  color: #1a237e;
+  margin-bottom: 1.5rem;
+}
+
+.categoryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+.categoryCard {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  text-align: center;
+  text-decoration: none;
+  color: #333;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+}
+
+.categoryCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.categoryIcon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.categoryCard span {
+  font-weight: 500;
+}
+
+.productGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.productImage {
+  position: relative;
+  height: 200px;
+  background: #f5f5f5;
+  overflow: hidden;
+}
+
+.productImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.productPrice {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.5rem;
+  background: #1a237e;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.productInfo {
+  padding: 1rem;
+}
+
+.productInfo h3 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.productSeller {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0.25rem 0;
+}
+
+.productRating {
+  font-size: 0.9rem;
+  color: #f5a623;
+  margin: 0.5rem 0;
+}
+
+.viewBtn {
+  display: inline-block;
+  padding: 0.5rem 1.5rem;
+  background: #1a237e;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.viewBtn:hover {
+  background: #0d1555;
+}
+
+@media (max-width: 768px) {
+  .hero {
+    padding: 2rem 1.5rem;
+  }
+
+  .heroContent h1 {
+    font-size: 1.8rem;
+  }
+
+  .categoryGrid {
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  }
+}

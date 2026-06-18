@@ -1,0 +1,146 @@
+.checkoutPage {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.checkoutLayout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.orderItem {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.itemName {
+  flex: 1;
+}
+
+.itemQty {
+  margin: 0 1rem;
+  color: #666;
+}
+
+.itemPrice {
+  font-weight: 500;
+}
+
+.totalSection {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+}
+
+.grandTotal {
+  border-top: 2px solid #1a237e;
+  padding-top: 1rem;
+  margin-top: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.paymentInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.formGroup label {
+  font-weight: 500;
+  color: #333;
+}
+
+.formGroup input,
+.paymentSelect {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.formGroup input:focus,
+.paymentSelect:focus {
+  outline: none;
+  border-color: #1a237e;
+}
+
+.paypalContainer {
+  margin-top: 0.5rem;
+}
+
+.paypalNote {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 0.75rem;
+}
+
+.placeOrderBtn {
+  padding: 0.75rem;
+  background: #1a237e;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 0.5rem;
+  width: 100%;
+}
+
+.placeOrderBtn:hover:not(:disabled) {
+  background: #0d1555;
+}
+
+.placeOrderBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.successMessage {
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.successMessage p {
+  font-size: 1.1rem;
+  margin: 0.5rem 0;
+}
+
+.orderId {
+  color: #1a237e;
+  font-weight: 600;
+}
+
+.shopBtn {
+  padding: 0.75rem 2rem;
+  background: #1a237e;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 1rem;
+}
+
+.shopBtn:hover {
+  background: #0d1555;
+}
+
+@media (max-width: 768px) {
+  .checkoutLayout {
+    grid-template-columns: 1fr;
+  }
+}
