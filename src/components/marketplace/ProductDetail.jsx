@@ -4,6 +4,8 @@ import { CartContext } from "@contexts/CartContext";
 import { AuthContext } from "@contexts/AuthContext";
 import Card from "@components/common/Card";
 import styles from "./ProductDetail.module.css";
+import { FaCheckCircle } from "react-icons/fa";
+import { imagePath } from "@utils/helpers";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -17,7 +19,7 @@ const ProductDetail = () => {
   useEffect(() => {
     // Load product from localStorage
     const products = JSON.parse(localStorage.getItem("products") || "[]");
-    const found = products.find(p => p.id === parseInt(id));
+    const found = products.find((p) => p.id === parseInt(id));
     if (found) {
       setProduct(found);
     }
@@ -40,7 +42,9 @@ const ProductDetail = () => {
     return (
       <div className={styles.notFound}>
         <h2>Product not found</h2>
-        <Link to="/marketplace" className={styles.backBtn}>Back to Marketplace</Link>
+        <Link to="/marketplace" className={styles.backBtn}>
+          Back to Marketplace
+        </Link>
       </div>
     );
   }
@@ -54,7 +58,7 @@ const ProductDetail = () => {
       <div className={styles.detailLayout}>
         <div className={styles.imageSection}>
           <div className={styles.mainImage}>
-            <img src={`/images/${product.images[0]}`} alt={product.title} />
+            <img src={imagePath(product.images[0])} alt={product.title} />
           </div>
           {product.images.length > 1 && (
             <div className={styles.thumbnailGrid}>
@@ -84,12 +88,10 @@ const ProductDetail = () => {
               <div className={styles.sellerInfo}>
                 <div className={styles.sellerHeader}>
                   <span className={styles.sellerName}>Seller: {product.seller.name}</span>
-                  {product.seller.verified && (
-                    <span className={styles.verifiedBadge}>✓ Verified</span>
-                  )}
+                  {product.seller.verified && <span className={styles.verifiedBadge}>✓ Verified</span>}
                 </div>
                 <div className={styles.sellerRating}>
-                  ⭐ {product.seller.rating} ({product.seller.totalReviews} reviews)
+                  <FaCheckCircle /> {product.seller.rating} ({product.seller.totalReviews} reviews)
                 </div>
                 <span className={styles.location}>📍 {product.location}</span>
               </div>
@@ -102,32 +104,21 @@ const ProductDetail = () => {
               <div className={styles.quantitySection}>
                 <label>Quantity</label>
                 <div className={styles.quantityControl}>
-                  <button
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className={styles.qtyBtn}
-                  >
+                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className={styles.qtyBtn}>
                     -
                   </button>
                   <span className={styles.qtyDisplay}>{quantity}</span>
-                  <button
-                    onClick={() => setQuantity(quantity + 1)}
-                    className={styles.qtyBtn}
-                  >
+                  <button onClick={() => setQuantity(quantity + 1)} className={styles.qtyBtn}>
                     +
                   </button>
                 </div>
               </div>
 
               <div className={styles.actionButtons}>
-                <button
-                  onClick={handleAddToCart}
-                  className={styles.addToCartBtn}
-                >
+                <button onClick={handleAddToCart} className={styles.addToCartBtn}>
                   Add to Cart
                 </button>
-                <button className={styles.wishlistBtn}>
-                  ♥ Wishlist
-                </button>
+                <button className={styles.wishlistBtn}>♥ Wishlist</button>
               </div>
 
               {product.seller.id === user?.id && (

@@ -20,11 +20,9 @@ const BulletinBoard = () => {
     }
   }, []);
 
-  const filteredPosts = filter === "all" 
-    ? posts 
-    : posts.filter(p => p.category === filter);
+  const filteredPosts = filter === "all" ? posts : posts.filter((p) => p.category === filter);
 
-  const categories = ["all", "events", "services", "announcements", "promotions"];
+  const categories = ["all", "events", "services", "announcements", "promotions", "other"];
 
   return (
     <div className={styles.bulletinBoard}>
@@ -38,7 +36,7 @@ const BulletinBoard = () => {
       </div>
 
       <div className={styles.filterBar}>
-        {categories.map(cat => (
+        {categories.map((cat) => (
           <button
             key={cat}
             className={`${styles.filterBtn} ${filter === cat ? styles.active : ""}`}
@@ -53,7 +51,7 @@ const BulletinBoard = () => {
         {filteredPosts.length === 0 ? (
           <p className={styles.noPosts}>No posts found</p>
         ) : (
-          filteredPosts.map(post => (
+          filteredPosts.map((post) => (
             <Card key={post.id} className={styles.postCard}>
               <div className={styles.postHeader}>
                 <div className={styles.postMeta}>

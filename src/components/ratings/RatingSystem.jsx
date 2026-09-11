@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styles from "./RatingSystem.module.css";
+import { FaCheckCircle } from "react-icons/fa";
 
 const RatingSystem = ({ 
   sellerId, 
@@ -34,7 +35,7 @@ const RatingSystem = ({
       <div className={styles.ratingSummary}>
         <div className={styles.starDisplay}>
           <span className={styles.ratingNumber}>{currentRating}</span>
-          <span className={styles.starIcon}>⭐</span>
+          <span className={styles.starIcon}><FaCheckCircle /> </span>
         </div>
         <span className={styles.reviewCount}>({totalReviews} reviews)</span>
       </div>
