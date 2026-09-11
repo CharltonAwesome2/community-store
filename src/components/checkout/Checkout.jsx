@@ -94,7 +94,7 @@ const Checkout = () => {
     return actions.order.create({
       purchase_units: [
         {
-          description: "Community Store Purchase",
+          description: "TrustHive Purchase",
           amount: {
             currency_code: "ZAR",
             value: total.toFixed(2),

@@ -24,7 +24,7 @@ const Login = () => {
 
   return (
     <div className={styles.loginPage}>
-      <Card title="Login to Community Store" className={styles.loginCard}>
+      <Card title="Login to TrustHive" className={styles.loginCard}>
         <form onSubmit={handleSubmit} className={styles.form}>
           {error && <div className={styles.error}>{error}</div>}
           

@@ -73,7 +73,7 @@ const Layout = () => {
 
       <footer className={styles.footer}>
         <div className={styles.footerInner}>
-          <p>© 2026 Community Store - CPUT Project Management 3</p>
+          <p>© 2026 TrustHive - CPUT Project Management 3</p>
           <div className={styles.footerLinks}>
             <Link to="/about">About</Link>
             <Link to="/terms">Terms</Link>

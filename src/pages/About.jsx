@@ -5,11 +5,11 @@ import styles from "./About.module.css";
 const About = () => {
   return (
     <div className={styles.about}>
-      <h1>About Community Store</h1>
+      <h1>About TrustHive</h1>
       
       <Card title="Our Mission">
         <p>
-          Community Store is a campus marketplace platform designed to connect students, 
+          TrustHive is a campus marketplace platform designed to connect students, 
           faculty, local vendors, and residents in a trusted community ecosystem.
         </p>
       </Card>

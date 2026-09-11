@@ -14,7 +14,7 @@ const Home = () => {
     <div className={styles.home}>
       <section className={styles.hero}>
         <div className={styles.heroContent}>
-          <h1>Welcome to Community Store</h1>
+          <h1>Welcome to TrustHive</h1>
           <p>Buy, sell, and trade within your campus community</p>
           <Link to="/marketplace" className={styles.heroBtn}>
             Start Shopping
