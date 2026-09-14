@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import Card from "@components/common/Card";
 import { categories } from "@data/categories";
-import { mockProducts } from "@data/mockData";
 import styles from "./ProductList.module.css";
 import Select from "react-select";
 import { FaStar, FaCheckCircle } from "react-icons/fa";
 import { imagePath } from "@utils/helpers";
+import { supabase } from "@lib/supabase";
+import { mapProduct } from "@utils/mappers";
 
 const ProductList = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -26,15 +27,18 @@ const ProductList = () => {
     })),
   ];
 
-  // ── Load products (localStorage or mock) ─────────────────
+  // ── Load products from Supabase ──────────────────────────
   useEffect(() => {
-    const stored = localStorage.getItem("products");
-    if (stored) {
-      setProducts(JSON.parse(stored));
-    } else {
-      setProducts(mockProducts);
-      localStorage.setItem("products", JSON.stringify(mockProducts));
-    }
+    const load = async () => {
+      const { data, error } = await supabase.from("products").select().order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Failed to load products:", error.message);
+        return;
+      }
+      setProducts((data || []).map(mapProduct));
+    };
+    load();
   }, []);
 
   // ── Sync URL category param → local state (one-way) ──────
@@ -152,29 +156,21 @@ const ProductList = () => {
                   type="number"
                   placeholder="Min"
                   value={priceRange.min}
-                  onChange={(e) =>
-                    setPriceRange({ ...priceRange, min: e.target.value })
-                  }
+                  onChange={(e) => setPriceRange({ ...priceRange, min: e.target.value })}
                 />
                 <span>to</span>
                 <input
                   type="number"
                   placeholder="Max"
                   value={priceRange.max}
-                  onChange={(e) =>
-                    setPriceRange({ ...priceRange, max: e.target.value })
-                  }
+                  onChange={(e) => setPriceRange({ ...priceRange, max: e.target.value })}
                 />
               </div>
             </div>
 
             <div className={styles.filterGroup}>
               <label>Sort By</label>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className={styles.selectInput}
-              >
+              <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className={styles.selectInput}>
                 <option value="newest">Newest First</option>
                 <option value="price-low">Price: Low to High</option>
                 <option value="price-high">Price: High to Low</option>
@@ -190,9 +186,7 @@ const ProductList = () => {
       </div>
 
       <div className={styles.resultsHeader}>
-        <span className={styles.resultCount}>
-          {filteredProducts.length} items found
-        </span>
+        <span className={styles.resultCount}>{filteredProducts.length} items found</span>
         <Link to="/create-listing" className={styles.createBtn}>
           + Create Listing
         </Link>
@@ -208,10 +202,7 @@ const ProductList = () => {
             <Card key={product.id} variant="product">
               <div className={styles.productCard}>
                 <div className={styles.productImage}>
-                  <img
-                    src={imagePath(product.images[0])}
-                    alt={product.title}
-                  />
+                  <img src={imagePath(product.images[0])} alt={product.title} />
                   <span className={styles.productPrice}>R{product.price}</span>
                   {product.seller.verified && (
                     <span className={styles.verifiedBadge}>
@@ -224,21 +215,15 @@ const ProductList = () => {
                     <Link to={`/product/${product.id}`}>{product.title}</Link>
                   </h3>
                   <p className={styles.productCategory}>
-                    {categories.find((c) => c.id === product.category)?.name ??
-                      product.category}
+                    {categories.find((c) => c.id === product.category)?.name ?? product.category}
                   </p>
                   <div className={styles.productMeta}>
-                    <span className={styles.sellerName}>
-                      By {product.seller.name}
-                    </span>
+                    <span className={styles.sellerName}>By {product.seller.name}</span>
                     <span className={styles.productRating}>
                       <FaStar color="#f5b301" /> {product.seller.rating}
                     </span>
                   </div>
-                  <Link
-                    to={`/product/${product.id}`}
-                    className={styles.viewDetailsBtn}
-                  >
+                  <Link to={`/product/${product.id}`} className={styles.viewDetailsBtn}>
                     View Details
                   </Link>
                 </div>

@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect } from "react";
+import { supabase } from "@lib/supabase";
+import { mapUser } from "@utils/mappers";
 import { useLocalStorage } from "@hooks/useLocalStorage";
-import { seedDefaultUsers } from "@utils/seedUsers";
 
 export const AuthContext = createContext();
 
@@ -8,25 +9,41 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useLocalStorage("user", null);
   const [loading, setLoading] = useState(false);
 
+  // On mount: if a saved user exists, trust it. Optionally re-fetch to confirm.
   useEffect(() => {
-    seedDefaultUsers();
-    const saved = localStorage.getItem("user");
-    if (saved) setUser(JSON.parse(saved));
-    setLoading(false);
+    // No seeding — data lives in Supabase now.
+    // If you want to force a re-fetch of the current user on load, uncomment below.
+    // const saved = JSON.parse(localStorage.getItem("user") || "null");
+    // if (saved?.email) {
+    //   supabase
+    //     .from("users")
+    //     .select()
+    //     .eq("email", saved.email)
+    //     .single()
+    //     .then(({ data }) => data && setUser(mapUser(data)));
+    // }
   }, []);
 
   const login = async (email, password) => {
     setLoading(true);
     try {
-      // Mock login - In production, call API
-      const users = JSON.parse(localStorage.getItem("users") || "[]");
-      const foundUser = users.find((u) => u.email === email);
+      const { data, error } = await supabase
+        .from("users")
+        .select()
+        .eq("email", email)
+        .single();
 
-      if (foundUser) {
-        setUser(foundUser);
-        return { success: true };
+      if (error || !data) {
+        return { success: false, error: "Invalid credentials" };
       }
-      return { success: false, error: "Invalid credentials" };
+
+      if (data.password !== password) {
+        return { success: false, error: "Invalid credentials" };
+      }
+
+      const mapped = mapUser(data);
+      setUser(mapped);
+      return { success: true };
     } catch (error) {
       return { success: false, error: error.message };
     } finally {
@@ -37,26 +54,42 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     setLoading(true);
     try {
-      const users = JSON.parse(localStorage.getItem("users") || "[]");
+      // Check if email already exists
+      const { data: existing } = await supabase
+        .from("users")
+        .select("id")
+        .eq("email", userData.email)
+        .maybeSingle();
 
-      // Check if user exists
-      if (users.find((u) => u.email === userData.email)) {
+      if (existing) {
         return { success: false, error: "User already exists" };
       }
 
-      const newUser = {
-        id: Date.now(),
-        ...userData,
+      const row = {
+        email: userData.email,
+        password: userData.password,
+        name: userData.name,
+        role: userData.role,
+        business_name: userData.businessName || null,
+        business_registration: userData.businessRegistration || null,
         verified: userData.role === "student" ? false : true,
-        joinDate: new Date().toISOString().split("T")[0],
         rating: 0,
-        totalReviews: 0,
-        isActive: true,
+        total_reviews: 0,
+        is_active: true,
       };
 
-      users.push(newUser);
-      localStorage.setItem("users", JSON.stringify(users));
-      setUser(newUser);
+      const { data, error } = await supabase
+        .from("users")
+        .insert(row)
+        .select()
+        .single();
+
+      if (error) {
+        return { success: false, error: error.message };
+      }
+
+      const mapped = mapUser(data);
+      setUser(mapped);
       return { success: true };
     } catch (error) {
       return { success: false, error: error.message };
@@ -70,10 +103,11 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("user");
   };
 
-  return <AuthContext.Provider value={{ user, loading, login, register, logout }}>{children}</AuthContext.Provider>;
-};
-
-// inside AuthContext.jsx, alongside your existing login()
-const quickLogin = async (email) => {
-  return login(email, "password123");
+  return (
+    <AuthContext.Provider
+      value={{ user, loading, login, register, logout }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };
