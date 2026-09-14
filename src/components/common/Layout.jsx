@@ -16,7 +16,7 @@ const Layout = () => {
         <div className={styles.headerInner}>
           <Link to="/" className={styles.logo}>
             <img src={import.meta.env.BASE_URL + "cput-logo.png"} alt="CPUT" className={styles.logoImg} />
-            <span className={styles.logoText}>Community Store</span>
+            <span className={styles.logoText}>TrustHive</span>
           </Link>
 
           <nav className={styles.nav}>
