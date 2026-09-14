@@ -78,3 +78,119 @@
 .registerLink a:hover {
   text-decoration: underline;
 }
+
+/* ===== Demo Login Section ===== */
+.demoSection {
+  margin-top: 1.5rem;
+}
+
+.demoDivider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #888;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.demoDivider::before,
+.demoDivider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid #ddd;
+}
+
+.demoDivider span {
+  padding: 0 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.demoButtons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+}
+
+.demoBtn {
+  padding: 0.6rem 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #f8f8f8;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.15s ease;
+  color: #333;
+}
+
+.demoBtn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.demoBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Per-role accent colors */
+.demoBtn_student {
+  border-color: #4a90e2;
+  color: #4a90e2;
+}
+.demoBtn_student:hover:not(:disabled) {
+  background: #4a90e2;
+  color: white;
+}
+
+.demoBtn_vendor {
+  border-color: #e2a14a;
+  color: #b87a1f;
+}
+.demoBtn_vendor:hover:not(:disabled) {
+  background: #e2a14a;
+  color: white;
+}
+
+.demoBtn_admin {
+  border-color: #d64545;
+  color: #d64545;
+}
+.demoBtn_admin:hover:not(:disabled) {
+  background: #d64545;
+  color: white;
+}
+
+.demoBtn_faculty {
+  border-color: #7a4ae2;
+  color: #7a4ae2;
+}
+.demoBtn_faculty:hover:not(:disabled) {
+  background: #7a4ae2;
+  color: white;
+}
+
+.demoBtn_resident {
+  border-color: #4ac0a1;
+  color: #2f8d75;
+}
+.demoBtn_resident:hover:not(:disabled) {
+  background: #4ac0a1;
+  color: white;
+}
+
+.demoHint {
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+  color: #888;
+  text-align: center;
+}
+
+.demoHint code {
+  background: #f0f0f0;
+  padding: 0.15rem 0.35rem;
+  border-radius: 3px;
+  font-family: monospace;
+  color: #d64545;
+}

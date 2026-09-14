@@ -58,7 +58,7 @@ export const NotificationProvider = ({ children }) => {
       if (Notification.permission === "granted") {
         new Notification(notification.title, {
           body: notification.message,
-          icon: "/cput-logo.png",
+          icon: "/trusthive-logo.png",
         });
       }
     }

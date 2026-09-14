@@ -2,12 +2,14 @@ import React, { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "@contexts/AuthContext";
 import Card from "@components/common/Card";
+import { DEMO_ACCOUNTS } from "@utils/seedUsers";
 import styles from "./Login.module.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [demoLoading, setDemoLoading] = useState(null);
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -22,12 +24,24 @@ const Login = () => {
     }
   };
 
+  const handleDemoLogin = async (account) => {
+    setError("");
+    setDemoLoading(account.email);
+    const result = await login(account.email, account.password);
+    setDemoLoading(null);
+    if (result.success) {
+      navigate("/");
+    } else {
+      setError(`Demo login failed: ${result.error}`);
+    }
+  };
+
   return (
     <div className={styles.loginPage}>
       <Card title="Login to TrustHive" className={styles.loginCard}>
         <form onSubmit={handleSubmit} className={styles.form}>
           {error && <div className={styles.error}>{error}</div>}
-          
+
           <div className={styles.formGroup}>
             <label>Email</label>
             <input
@@ -58,6 +72,30 @@ const Login = () => {
             Don't have an account? <Link to="/register">Register here</Link>
           </p>
         </form>
+
+        <div className={styles.demoSection}>
+          <div className={styles.demoDivider}>
+            <span>Quick Demo Login</span>
+          </div>
+          <div className={styles.demoButtons}>
+            {DEMO_ACCOUNTS.map((account) => (
+              <button
+                key={account.email}
+                type="button"
+                onClick={() => handleDemoLogin(account)}
+                disabled={demoLoading !== null}
+                className={`${styles.demoBtn} ${styles[`demoBtn_${account.role}`]}`}
+              >
+                {demoLoading === account.email
+                  ? "Logging in…"
+                  : `Login as ${account.role.charAt(0).toUpperCase() + account.role.slice(1)}`}
+              </button>
+            ))}
+          </div>
+          <p className={styles.demoHint}>
+            All demo accounts use password: <code>password123</code>
+          </p>
+        </div>
       </Card>
     </div>
   );

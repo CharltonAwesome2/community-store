@@ -15,7 +15,7 @@ const Layout = () => {
       <header className={styles.header}>
         <div className={styles.headerInner}>
           <Link to="/" className={styles.logo}>
-            <img src={import.meta.env.BASE_URL + "cput-logo.png"} alt="CPUT" className={styles.logoImg} />
+            <img src={import.meta.env.BASE_URL + "trusthive-logo.png"} alt="TrustHive" className={styles.logoImg} />
             <span className={styles.logoText}>TrustHive</span>
           </Link>
 
@@ -73,7 +73,7 @@ const Layout = () => {
 
       <footer className={styles.footer}>
         <div className={styles.footerInner}>
-          <p>© 2026 TrustHive - CPUT Project Management 3</p>
+          <p>© 2026 TrustHive - Project Management 3</p>
           <div className={styles.footerLinks}>
             <Link to="/about">About</Link>
             <Link to="/terms">Terms</Link>
