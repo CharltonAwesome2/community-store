@@ -2,8 +2,8 @@ import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "@contexts/AuthContext";
 import Card from "@components/common/Card";
-import { mockBulletinPosts } from "@data/mockData";
 import styles from "./BulletinBoard.module.css";
+import { api } from "@lib/api";
 
 const BulletinBoard = () => {
   const { user } = useContext(AuthContext);
@@ -11,13 +11,10 @@ const BulletinBoard = () => {
   const [filter, setFilter] = useState("all");
 
   useEffect(() => {
-    const stored = localStorage.getItem("bulletinPosts");
-    if (stored) {
-      setPosts(JSON.parse(stored));
-    } else {
-      setPosts(mockBulletinPosts);
-      localStorage.setItem("bulletinPosts", JSON.stringify(mockBulletinPosts));
-    }
+    api.bulletin
+      .list()
+      .then(setPosts)
+      .catch((err) => console.error("Failed to load posts:", err.message));
   }, []);
 
   const filteredPosts = filter === "all" ? posts : posts.filter((p) => p.category === filter);

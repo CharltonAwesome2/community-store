@@ -2,8 +2,19 @@ import React, { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "@contexts/AuthContext";
 import Card from "@components/common/Card";
-import { DEMO_ACCOUNTS } from "@utils/seedUsers";
 import styles from "./Login.module.css";
+
+// Demo accounts — these mirror the seeded `users` table in Supabase.
+// All use password "password123" (see scripts/migrate.js).
+const DEMO_ACCOUNTS = [
+  { email: "john.doe@campus.edu",      role: "student" },
+  { email: "sales@techstore.co.za",    role: "vendor"  },
+  { email: "admin@campus.edu",         role: "admin"   },
+  { email: "nomvula.k@campus.edu",     role: "faculty" },
+  { email: "mike.vdm@campus.edu",      role: "resident"},
+];
+
+const DEMO_PASSWORD = "password123";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -27,7 +38,7 @@ const Login = () => {
   const handleDemoLogin = async (account) => {
     setError("");
     setDemoLoading(account.email);
-    const result = await login(account.email, account.password);
+    const result = await login(account.email, DEMO_PASSWORD);
     setDemoLoading(null);
     if (result.success) {
       navigate("/");
@@ -93,7 +104,7 @@ const Login = () => {
             ))}
           </div>
           <p className={styles.demoHint}>
-            All demo accounts use password: <code>password123</code>
+            All demo accounts use password: <code>{DEMO_PASSWORD}</code>
           </p>
         </div>
       </Card>

@@ -6,8 +6,7 @@ import styles from "./ProductList.module.css";
 import Select from "react-select";
 import { FaStar, FaCheckCircle } from "react-icons/fa";
 import { imagePath } from "@utils/helpers";
-import { supabase } from "@lib/supabase";
-import { mapProduct } from "@utils/mappers";
+import { api } from "@lib/api";
 
 const ProductList = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -29,16 +28,10 @@ const ProductList = () => {
 
   // ── Load products from Supabase ──────────────────────────
   useEffect(() => {
-    const load = async () => {
-      const { data, error } = await supabase.from("products").select().order("created_at", { ascending: false });
-
-      if (error) {
-        console.error("Failed to load products:", error.message);
-        return;
-      }
-      setProducts((data || []).map(mapProduct));
-    };
-    load();
+    api.products
+      .list()
+      .then(setProducts)
+      .catch((err) => console.error("Failed to load products:", err.message));
   }, []);
 
   // ── Sync URL category param → local state (one-way) ──────

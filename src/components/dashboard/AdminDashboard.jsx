@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Card from "@components/common/Card";
 import styles from "./AdminDashboard.module.css";
+import { api } from "@lib/api";
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
@@ -12,29 +13,26 @@ const AdminDashboard = () => {
   const [recentActivity, setRecentActivity] = useState([]);
 
   useEffect(() => {
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
-    const products = JSON.parse(localStorage.getItem("products") || "[]");
-    const orders = JSON.parse(localStorage.getItem("orders") || "[]");
-    
-    setStats({
-      totalUsers: users.length,
-      totalProducts: products.length,
-      totalOrders: orders.length,
-      pendingVerifications: users.filter(u => !u.verified).length,
-    });
-
-    // Mock recent activity
-    setRecentActivity([
-      { id: 1, action: "New user registered", user: "John Doe", time: "2 mins ago" },
-      { id: 2, action: "Product listed", user: "TechStore", time: "15 mins ago" },
-      { id: 3, action: "Order completed", user: "Jane Smith", time: "1 hour ago" },
-    ]);
+    const load = async () => {
+      try {
+        const [totalUsers, totalProducts, totalOrders, pendingVerifications] = await Promise.all([
+          api.users.count(),
+          api.products.count(),
+          api.orders.count(),
+          api.users.countUnverified(),
+        ]);
+        setStats({ totalUsers, totalProducts, totalOrders, pendingVerifications });
+      } catch (err) {
+        console.error("AdminDashboard load failed:", err.message);
+      }
+    };
+    load();
   }, []);
 
   return (
     <div className={styles.adminDashboard}>
       <h1>Admin Dashboard</h1>
-      
+
       <div className={styles.statsGrid}>
         <Card variant="stats" className={styles.statCard}>
           <div className={styles.statIcon}>👥</div>
@@ -71,7 +69,7 @@ const AdminDashboard = () => {
           <h2>Recent Activity</h2>
           <Card>
             <ul className={styles.activityList}>
-              {recentActivity.map(activity => (
+              {recentActivity.map((activity) => (
                 <li key={activity.id} className={styles.activityItem}>
                   <span className={styles.activityAction}>{activity.action}</span>
                   <span className={styles.activityUser}>by {activity.user}</span>

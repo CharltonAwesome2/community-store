@@ -1,5 +1,6 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
 import { AuthContext } from "./AuthContext";
+import { api } from "@lib/api";
 
 export const NotificationContext = createContext();
 
@@ -19,91 +20,127 @@ export const NotificationProvider = ({ children }) => {
     },
   });
 
-  // Load notifications from localStorage
-  React.useEffect(() => {
-    if (user) {
-      const stored = localStorage.getItem(`notifications_${user.id}`);
-      if (stored) {
-        setNotifications(JSON.parse(stored));
-      }
-      
-      const prefs = localStorage.getItem(`notification_prefs_${user.id}`);
-      if (prefs) {
-        setPreferences(JSON.parse(prefs));
-      }
+  // Load notifications and preferences when the user changes
+  useEffect(() => {
+    if (!user) {
+      setNotifications([]);
+      return;
     }
+
+    const load = async () => {
+      try {
+        const [notifs, prefs] = await Promise.all([
+          api.notifications.listByUser(user.id),
+          api.notifications.getPreferences(user.id),
+        ]);
+        setNotifications(notifs);
+        if (prefs) {
+          setPreferences({
+            email: prefs.email,
+            push: prefs.push,
+            inApp: prefs.in_app,
+            frequency: prefs.frequency,
+            types: prefs.types,
+          });
+        }
+      } catch (err) {
+        console.error("NotificationContext load failed:", err.message);
+      }
+    };
+
+    load();
   }, [user]);
 
-  // Save notifications to localStorage
-  const saveNotifications = (newNotifications) => {
-    if (user) {
-      localStorage.setItem(`notifications_${user.id}`, JSON.stringify(newNotifications));
-    }
-  };
+  const addNotification = async (notification) => {
+    if (!user) return null;
+    try {
+      const mapped = await api.notifications.create({
+        user_id: user.id,
+        title: notification.title,
+        message: notification.message,
+        read: false,
+      });
+      setNotifications((prev) => [mapped, ...prev]);
 
-  const addNotification = (notification) => {
-    const newNotification = {
-      id: Date.now(),
-      ...notification,
-      read: false,
-      createdAt: new Date().toISOString(),
-    };
-    
-    const updated = [newNotification, ...notifications];
-    setNotifications(updated);
-    saveNotifications(updated);
-    
-    // Trigger browser notification if enabled
-    if (preferences.push && "Notification" in window) {
-      if (Notification.permission === "granted") {
-        new Notification(notification.title, {
-          body: notification.message,
-          icon: "/trusthive-logo.png",
-        });
+      if (preferences.push && "Notification" in window) {
+        if (Notification.permission === "granted") {
+          new Notification(notification.title, {
+            body: notification.message,
+            icon: "/trusthive-logo.png",
+          });
+        }
       }
+      return mapped;
+    } catch (err) {
+      console.error("addNotification failed:", err.message);
+      return null;
     }
-    
-    return newNotification;
   };
 
-  const markAsRead = (notificationId) => {
-    const updated = notifications.map(n =>
-      n.id === notificationId ? { ...n, read: true } : n
-    );
-    setNotifications(updated);
-    saveNotifications(updated);
+  const markAsRead = async (id) => {
+    try {
+      await api.notifications.markAsRead(id);
+      setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
+    } catch (err) {
+      console.error("markAsRead failed:", err.message);
+    }
   };
 
-  const markAllAsRead = () => {
-    const updated = notifications.map(n => ({ ...n, read: true }));
-    setNotifications(updated);
-    saveNotifications(updated);
+  const markAllAsRead = async () => {
+    if (!user) return;
+    try {
+      await api.notifications.markAllAsRead(user.id);
+      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    } catch (err) {
+      console.error("markAllAsRead failed:", err.message);
+    }
   };
 
-  const deleteNotification = (notificationId) => {
-    const updated = notifications.filter(n => n.id !== notificationId);
-    setNotifications(updated);
-    saveNotifications(updated);
+  const deleteNotification = async (id) => {
+    try {
+      await api.notifications.delete(id);
+      setNotifications((prev) => prev.filter((n) => n.id !== id));
+    } catch (err) {
+      console.error("deleteNotification failed:", err.message);
+    }
   };
 
-  const clearAllNotifications = () => {
-    setNotifications([]);
-    saveNotifications([]);
+  const clearAllNotifications = async () => {
+    if (!user) return;
+    try {
+      await api.notifications.clearAll(user.id);
+      setNotifications([]);
+    } catch (err) {
+      console.error("clearAllNotifications failed:", err.message);
+    }
   };
 
   const getUnreadCount = () => {
-    return notifications.filter(n => !n.read).length;
+    return notifications.filter((n) => !n.read).length;
   };
 
-  const updatePreferences = (newPrefs) => {
+  const updatePreferences = async (newPrefs) => {
     const updated = { ...preferences, ...newPrefs };
     setPreferences(updated);
-    if (user) {
-      localStorage.setItem(`notification_prefs_${user.id}`, JSON.stringify(updated));
+
+    if (!user) return;
+
+    const row = {
+      user_id: user.id,
+      email: updated.email,
+      push: updated.push,
+      in_app: updated.inApp,
+      frequency: updated.frequency,
+      types: updated.types,
+    };
+
+    const { error } = await supabase.from("notification_preferences").upsert(row, { onConflict: "user_id" });
+
+    if (error) {
+      console.error("Failed to save preferences:", error.message);
     }
   };
 
-  // Request notification permission
   const requestNotificationPermission = async () => {
     if ("Notification" in window) {
       const permission = await Notification.requestPermission();

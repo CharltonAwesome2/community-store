@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "@contexts/AuthContext";
 import Card from "@components/common/Card";
 import styles from "./CreatePost.module.css";
+import { api } from "@lib/api";
 
 const CreatePost = () => {
   const { user } = useContext(AuthContext);
@@ -13,30 +14,23 @@ const CreatePost = () => {
     category: "announcements",
   });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    if (!user) {
-      navigate("/login");
-      return;
+  const handleSubmit = async (e) => {
+    try {
+      await api.bulletin.create({
+        title: formData.title,
+        content: formData.content,
+        category: formData.category,
+        author_id: user.id,
+        author_name: user.name,
+        author_role: user.role,
+        likes: 0,
+        comments: 0,
+      });
+      alert("Post created successfully!");
+      navigate("/bulletin");
+    } catch (err) {
+      alert(`Failed to create post: ${err.message}`);
     }
-
-    const posts = JSON.parse(localStorage.getItem("bulletinPosts") || "[]");
-    const newPost = {
-      id: Date.now(),
-      ...formData,
-      author: user.name,
-      authorRole: user.role,
-      createdAt: new Date().toISOString().split("T")[0],
-      comments: 0,
-      likes: 0,
-    };
-
-    posts.unshift(newPost);
-    localStorage.setItem("bulletinPosts", JSON.stringify(posts));
-    
-    alert("Post created successfully!");
-    navigate("/bulletin");
   };
 
   return (
@@ -50,7 +44,7 @@ const CreatePost = () => {
               type="text"
               required
               value={formData.title}
-              onChange={(e) => setFormData({...formData, title: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               placeholder="Post title..."
             />
           </div>
@@ -60,7 +54,7 @@ const CreatePost = () => {
             <select
               required
               value={formData.category}
-              onChange={(e) => setFormData({...formData, category: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
             >
               <option value="announcements">Announcements</option>
               <option value="events">Events</option>
@@ -75,7 +69,7 @@ const CreatePost = () => {
               required
               rows="6"
               value={formData.content}
-              onChange={(e) => setFormData({...formData, content: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, content: e.target.value })}
               placeholder="Write your post content..."
             />
           </div>

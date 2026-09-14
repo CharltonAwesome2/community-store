@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { AuthContext } from "@contexts/AuthContext";
 import Card from "@components/common/Card";
 import styles from "./VendorDashboard.module.css";
+import { api } from "@lib/api";
 
 const VendorDashboard = () => {
   const { user } = useContext(AuthContext);
@@ -15,27 +16,33 @@ const VendorDashboard = () => {
   });
 
   useEffect(() => {
-    if (user) {
-      const allProducts = JSON.parse(localStorage.getItem("products") || "[]");
-      const userProducts = allProducts.filter(p => p.seller.id === user.id);
-      setProducts(userProducts);
+    if (!user) return;
 
-      const allOrders = JSON.parse(localStorage.getItem("orders") || "[]");
-      const userOrders = allOrders.filter(o => o.seller === user.name);
-      setOrders(userOrders);
+    const load = async () => {
+      try {
+        const [userProducts, userOrders] = await Promise.all([
+          api.products.listBySeller(user.id),
+          api.orders.listBySeller(user.name),
+        ]);
+        setProducts(userProducts);
+        setOrders(userOrders);
+        setStats({
+          totalProducts: userProducts.length,
+          totalSales: userOrders.length,
+          revenue: userOrders.reduce((sum, o) => sum + o.total, 0),
+        });
+      } catch (err) {
+        console.error("VendorDashboard load failed:", err.message);
+      }
+    };
 
-      setStats({
-        totalProducts: userProducts.length,
-        totalSales: userOrders.length,
-        revenue: userOrders.reduce((sum, o) => sum + o.total, 0),
-      });
-    }
+    load();
   }, [user]);
 
   return (
     <div className={styles.vendorDashboard}>
       <h1>Vendor Dashboard</h1>
-      
+
       <div className={styles.statsGrid}>
         <Card variant="stats" className={styles.statCard}>
           <div className={styles.statIcon}>📦</div>
@@ -74,7 +81,7 @@ const VendorDashboard = () => {
               <p className={styles.empty}>No listings yet. Create your first listing!</p>
             ) : (
               <div className={styles.productList}>
-                {products.map(product => (
+                {products.map((product) => (
                   <div key={product.id} className={styles.productItem}>
                     <div className={styles.productInfo}>
                       <h4>{product.title}</h4>
@@ -95,7 +102,7 @@ const VendorDashboard = () => {
               <p className={styles.empty}>No orders yet.</p>
             ) : (
               <div className={styles.orderList}>
-                {orders.slice(0, 5).map(order => (
+                {orders.slice(0, 5).map((order) => (
                   <div key={order.id} className={styles.orderItem}>
                     <div>
                       <span className={styles.orderBuyer}>{order.buyer}</span>

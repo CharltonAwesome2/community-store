@@ -6,6 +6,7 @@ import Card from "@components/common/Card";
 import styles from "./ProductDetail.module.css";
 import { FaCheckCircle } from "react-icons/fa";
 import { imagePath } from "@utils/helpers";
+import { api } from "@lib/api";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -17,13 +18,11 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
-    // Load product from localStorage
-    const products = JSON.parse(localStorage.getItem("products") || "[]");
-    const found = products.find((p) => p.id === parseInt(id));
-    if (found) {
-      setProduct(found);
-    }
-    setLoading(false);
+    api.products
+      .getById(id)
+      .then((p) => setProduct(p))
+      .catch((err) => console.error("Failed to load product:", err.message))
+      .finally(() => setLoading(false));
   }, [id]);
 
   const handleAddToCart = () => {
