@@ -4,7 +4,7 @@ import { fileURLToPath, URL } from "node:url";
 
 export default defineConfig({
   plugins: [react()],
-  base: "/community-store/",  // Correct for GitHub Pages
+  base: "/",  // Correct for GitHub Pages
   server: {
     port: 5173,  // Optional: Change to match your preference
   },
